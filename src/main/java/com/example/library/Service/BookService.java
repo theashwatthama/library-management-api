@@ -53,10 +53,10 @@ public class BookService {
     }
 
     public BookDTO updateBook(Long id,BookDTO bookDTO){
-        isExists(id);
-        BookEntity entity=modelMapper.map(bookDTO,BookEntity.class);
-        entity.setId(id);
-        BookEntity update=bookRepository.save(entity);
+        BookEntity existing=bookRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("book not found with id "+id));
+        modelMapper.map(bookDTO,existing);
+        existing.setId(id);
+        BookEntity update=bookRepository.save(existing);
         return modelMapper.map(update,BookDTO.class);
     }
 

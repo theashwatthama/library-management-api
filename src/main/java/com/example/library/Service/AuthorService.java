@@ -66,11 +66,13 @@ public class AuthorService {
     }
 
     public AuthorDTO updateAuthor(Long id, AuthorDTO authorDTO) {
-        isExists(id);
-        AuthorEntity author = modelMapper.map(authorDTO,AuthorEntity.class);
-        author.setId(id);
-        AuthorEntity update=authorRepository.save(author);
-        return modelMapper.map(update,AuthorDTO.class);
+        AuthorEntity existing = authorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Author not found with id: " + id));
+        modelMapper.map(authorDTO,existing);
+        existing.setId(id);
+
+        AuthorEntity updated=authorRepository.save(existing);
+        return modelMapper.map(updated,AuthorDTO.class);
 
     }
     public boolean isExists(Long id){
